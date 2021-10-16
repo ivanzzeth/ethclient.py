@@ -56,7 +56,13 @@ class TestInterfaces(unittest.TestCase):
 
     def test_interfaces(self):
         self.setup()
+        print('addr1: ', self.web3.eth.accounts[0])
+        print('addr2: ', self.web3.eth.accounts[1])
         print('greet: ', self.greeter.functions.greet())
-        for event in self.greeter.functions.setGreeting('hello').events:
+        res = self.greeter.functions.setGreeting('hello', **{
+            'from': self.web3.eth.accounts[1]
+        })
+        print('tx: ', self.web3.eth.getTransaction(res.tx_hash))
+        for event in res.events:
             print('set event: ', event)
         self.greeter.shutdown(wait=True)

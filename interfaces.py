@@ -43,11 +43,13 @@ import nonce
 
 
 class ExecutionResult:
+    tx_hash: str
     return_value: Any
     events: Iterable[EventData]
     error: Union[str, None]
 
-    def __init__(self, return_value: Any, events: Iterable[EventData], error: Union[str, None]):
+    def __init__(self, tx_hash: str, return_value: Any, events: Iterable[EventData], error: Union[str, None]):
+        self.tx_hash = tx_hash
         self.return_value = return_value
         self.events = events
         self.error = error
@@ -72,14 +74,18 @@ class ContractFunction:
         self.web3_func = web3_func
 
     def __call__(self, *args: Any, **kwargs: Any) -> ExecutionResult:
-        web3_func = self.web3_func.__call__(*args, **kwargs)
+        """
+
+        :param args: the function args of smart contract
+        :param kwargs: the transaction params
+        :return:
+        """
+        web3_func = self.web3_func.__call__(*args, **{})
 
         block_number = self.web3_func.web3.eth.block_number
 
-        tx = {
-            # TODO:
-            'from': web3_func.web3.eth.coinbase,
-        }
+        tx = kwargs
+        tx_hash: str = ""
         events: List = []
         error = None
 
@@ -105,7 +111,7 @@ class ContractFunction:
         return_value = web3_func.call(transaction=call_tx_params, block_identifier=block_number)
 
         # TODO: error message
-        return ExecutionResult(return_value, events, error)
+        return ExecutionResult(tx_hash, return_value, events, error)
 
 
 class ContractFunctions(AttributeDict):
