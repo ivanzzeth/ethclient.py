@@ -37,24 +37,24 @@ class Manager:
                         self.task_queue.put(item)
                         print('exit tx schedule task...')
                         break
+                    # TODO: remove private_key
                     (tx, private_key, receipt_out_queue) = item
 
-                    # gas = self.web3.eth.estimateGas(tx)
-                    gas = 210000
+                    gas = self.web3.eth.estimateGas(tx)
                     self.web3.eth.call(tx)
                     gas_price = self.web3.eth.gasPrice
-                    addr = self.web3.eth.account.privateKeyToAccount(private_key).address
+                    addr = tx['from']
                     nonce = self.get_nonce(addr)
 
                     # fill tx
                     tx = dict(tx)
+                    tx['from'] = addr
                     tx['gas'] = gas
                     tx['gasPrice'] = gas_price
                     tx['nonce'] = nonce
 
                     # send transaction
-                    signed_tx = self.web3.eth.account.signTransaction(tx, private_key)
-                    tx_hash = self.web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+                    tx_hash = self.web3.eth.send_transaction(tx)
                     self.receipt_queue.put((tx_hash, receipt_out_queue))
                     logging.info('put to receipt queue, tx {}'.format(tx_hash.hex()))
 
