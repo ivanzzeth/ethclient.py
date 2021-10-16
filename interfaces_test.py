@@ -62,7 +62,7 @@ class TestInterfaces(unittest.TestCase):
         res = self.greeter.functions.setGreeting('hello', **{
             'from': self.web3.eth.accounts[1]
         })
-        print('tx: ', self.web3.eth.getTransaction(res.tx_hash))
+        print('tx: ', self.web3.eth.get_transaction(res.tx_hash))
         for event in res.events:
             print('set event: ', event)
         self.greeter.shutdown(wait=True)

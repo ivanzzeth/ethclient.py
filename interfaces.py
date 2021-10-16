@@ -96,7 +96,7 @@ class ContractFunction:
             (tx_hash, receipt) = receipt_out_queue.get()
             for event in self.events:
                 try:
-                    events.extend(event().processReceipt(receipt))
+                    events.extend(event().processReceipt(receipt, EventLogErrorFlags.Discard))
                 except:
                     pass
 

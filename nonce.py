@@ -40,9 +40,9 @@ class Manager:
                     # TODO: remove private_key
                     (tx, private_key, receipt_out_queue) = item
 
-                    gas = self.web3.eth.estimateGas(tx)
+                    gas = self.web3.eth.estimate_gas(tx)
                     self.web3.eth.call(tx)
-                    gas_price = self.web3.eth.gasPrice
+                    gas_price = self.web3.eth.gas_price
                     addr = tx['from']
                     nonce = self.get_nonce(addr)
 
@@ -77,7 +77,7 @@ class Manager:
                         self.task_queue.put(item)
                         break
                     (tx_hash, receipt_out_queue) = item
-                    receipt = self.web3.eth.waitForTransactionReceipt(tx_hash, timeout=CONFIRM_TIMEOUT)
+                    receipt = self.web3.eth.wait_for_transaction_receipt(tx_hash, timeout=CONFIRM_TIMEOUT)
                     if receipt['status'] == 0:
                         logging.warning('transaction {} execution err'.format(tx_hash.hex()))
                     if receipt_out_queue is not False:
@@ -97,7 +97,7 @@ class Manager:
 
     def get_nonce(self, account: str, block_identifier='latest') -> int:
         if (account in self._nonce_dict) is False:
-            self._nonce_dict[account] = self.web3.eth.getTransactionCount(account, block_identifier)
+            self._nonce_dict[account] = self.web3.eth.get_transaction_count(account, block_identifier)
         logging.info('nonce: {}'.format(self._nonce_dict[account]))
         return self._nonce_dict[account]
 
