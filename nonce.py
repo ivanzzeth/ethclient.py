@@ -38,7 +38,7 @@ class Manager:
                         print('exit tx schedule task...')
                         break
                     # TODO: remove private_key
-                    (tx, private_key, receipt_out_queue) = item
+                    (tx, receipt_out_queue) = item
 
                     gas = self.web3.eth.estimate_gas(tx)
                     self.web3.eth.call(tx)
@@ -48,9 +48,6 @@ class Manager:
 
                     # fill tx
                     tx = dict(tx)
-                    tx['from'] = addr
-                    tx['gas'] = gas
-                    tx['gasPrice'] = gas_price
                     tx['nonce'] = nonce
 
                     # send transaction
@@ -88,8 +85,8 @@ class Manager:
 
         self._check_thread_manager.submit(confirm)
 
-    def submit_tx(self, tx: TxParams, private_key, receipt_out_queue: queue.Queue = None):
-        self.task_queue.put((tx, private_key, receipt_out_queue))
+    def submit_tx(self, tx: TxParams, receipt_out_queue: queue.Queue = None):
+        self.task_queue.put((tx, receipt_out_queue))
 
     def shutdown(self, wait: False):
         self._task_thread_manager.shutdown(wait)

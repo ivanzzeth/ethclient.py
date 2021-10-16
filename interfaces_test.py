@@ -60,7 +60,9 @@ class TestInterfaces(unittest.TestCase):
         print('addr2: ', self.web3.eth.accounts[1])
         print('greet: ', self.greeter.functions.greet())
         res = self.greeter.functions.setGreeting('hello', **{
-            'from': self.web3.eth.accounts[1]
+            'from': self.web3.eth.accounts[1],
+            'gas': 88888,
+            'gasPrice': 100,
         })
         print('tx: ', self.web3.eth.get_transaction(res.tx_hash))
         for event in res.events:

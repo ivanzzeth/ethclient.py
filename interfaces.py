@@ -73,7 +73,7 @@ class ContractFunction:
         self.events = events
         self.web3_func = web3_func
 
-    def __call__(self, *args: Any, **kwargs: Any) -> ExecutionResult:
+    def __call__(self, *args: Any, **kwargs: TxParams) -> ExecutionResult:
         """
 
         :param args: the function args of smart contract
@@ -92,7 +92,7 @@ class ContractFunction:
         if web3_func.abi['stateMutability'] not in {'pure', 'view'}:
             receipt_out_queue = queue.Queue(maxsize=1)
             tx = web3_func.buildTransaction(tx)
-            self.nonce_manager.submit_tx(tx, '', receipt_out_queue)
+            self.nonce_manager.submit_tx(tx, receipt_out_queue)
             (tx_hash, receipt) = receipt_out_queue.get()
             for event in self.events:
                 try:
