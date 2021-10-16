@@ -4,6 +4,7 @@ from web3 import Web3
 from solcx import compile_source
 
 from interfaces import Contract
+from reconnect import http_retry_request_middleware, ReconnectMiddleware
 
 
 class TestInterfaces(unittest.TestCase):
@@ -44,6 +45,11 @@ class TestInterfaces(unittest.TestCase):
         abi = contract_interface['abi']
         bytecode = contract_interface['bin']
         self.web3 = Web3(Web3.EthereumTesterProvider())
+
+        # add middleware for reconnection
+        self.web3.middleware_onion.add(http_retry_request_middleware, 'http_retry_request_middleware')
+        self.web3.middleware_onion.inject(ReconnectMiddleware, 'reconnect_middleware', 0)
+
         greeter_factory = self.web3.eth.contract(abi=abi, bytecode=bytecode)
         tx_hash = greeter_factory.constructor().transact()
         tx_receipt = self.web3.eth.wait_for_transaction_receipt(tx_hash)
