@@ -92,6 +92,10 @@ class ContractFunction:
         if web3_func.abi['stateMutability'] not in {'pure', 'view'}:
             receipt_out_queue = queue.Queue(maxsize=1)
             tx = web3_func.buildTransaction(tx)
+            try:
+                web3_func.web3.eth.call(tx)
+            except Exception as e:
+                return ExecutionResult('', None, [], str(e))
             self.nonce_manager.submit_tx(tx, receipt_out_queue)
             (tx_hash, receipt) = receipt_out_queue.get()
             for event in self.events:

@@ -106,8 +106,7 @@ class ReconnectMiddleware:
                 continue
             except Exception as e:
                 logging.error('ReconnectMiddleware exception: {}'.format(e))
-                time.sleep(RECONNECT_INTERVAL)
-                continue
+                break
             break
         logging.debug('ReconnectMiddleware do post-processing here')
         return response

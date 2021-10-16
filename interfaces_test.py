@@ -61,16 +61,23 @@ class TestInterfaces(unittest.TestCase):
         self.greeter = Contract(greeter)
 
     def test_interfaces(self):
-        self.setup()
-        print('addr1: ', self.web3.eth.accounts[0])
-        print('addr2: ', self.web3.eth.accounts[1])
-        print('greet: ', self.greeter.functions.greet())
-        res = self.greeter.functions.setGreeting('hello', **{
-            'from': self.web3.eth.accounts[1],
-            'gas': 88888,
-            'gasPrice': 100,
-        })
-        print('tx: ', self.web3.eth.get_transaction(res.tx_hash))
-        for event in res.events:
-            print('set event: ', event)
-        self.greeter.shutdown(wait=True)
+        try:
+            self.setup()
+            print('addr1: ', self.web3.eth.accounts[0])
+            print('addr2: ', self.web3.eth.accounts[1])
+            print('greet: ', self.greeter.functions.greet())
+            res = self.greeter.functions.setGreeting('hello', **{
+                'from': self.web3.eth.accounts[1],
+                'gas': 88888,
+                'gasPrice': 100,
+                'value': 1,
+            })
+            if res.error is None:
+                print('tx: ', self.web3.eth.get_transaction(res.tx_hash))
+                for event in res.events:
+                    print('set event: ', event)
+            else:
+                print('execution err: ', res)
+        finally:
+            self.greeter.shutdown(wait=True)
+
