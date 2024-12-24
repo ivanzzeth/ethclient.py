@@ -22,7 +22,7 @@ class TestNonceManager(unittest.TestCase):
         print('tx: ', tx)
         receipt_out_queue = queue.Queue(maxsize=1)
 
-        manager.submit_tx(tx, '', receipt_out_queue)
+        manager.submit_tx(tx, receipt_out_queue)
         (tx_hash, receipt) = receipt_out_queue.get()
         print('hash: ', tx_hash)
         print('receipt: ', receipt)

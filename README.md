@@ -1,19 +1,43 @@
 # ethclient.py
-To make calling smart contract like a common function.
+Make calling smart contract like a common function.
+
+## Requirements
+
+Python 3.8+
 
 ## Get started
 
+Install `ethclient`
+
+```bash
+pip install ethclient
+```
+
+Usage:
+
 ```python
-conda activate
-conda create -n ethclient python=3.8
+from ethclient import Contract
+greeter = web3.eth.contract(
+    address=contract_address,
+    abi=abi
+)
+
+greeter = Contract(greeter)
+```
+
+## Local Development
+
+Create a new virtual environment:
+```bash
+python -m venv myenv
 ```
 
 To activate this environment, use:
-```python
-conda activate ethclient
+```bash
+source ./myenv/bin/activate
 ```
 
-To deactivate an active environment, use:
-```python
-conda deactivate
+Install dependencies:
+```bash
+pip install -r requirements.txt
 ```

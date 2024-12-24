@@ -1,39 +1,21 @@
 import queue
 from typing import *
 
-from eth_typing import (
-    Address,
-    BlockNumber,
-    ChecksumAddress,
-    HexStr,
-)
-
-from web3 import Web3
-
 from web3.types import (
-    ABI,
-    ABIEvent,
-    ABIFunction,
-    BlockIdentifier,
     EventData,
-    FunctionIdentifier,
-    LogReceipt,
     TxParams,
-    TxReceipt,
 )
 
 from web3.contract import (
     Contract as Web3Contract,
-    ContractEvent as Web3ContractEvent,
-    ContractEvents as Web3ContractEvents,
+)
+
+from web3.contract.contract import (
     ContractFunction as Web3ContractFunction,
+    ContractEvents as Web3ContractEvents,
 )
 
 from web3.logs import (
-    DISCARD,
-    IGNORE,
-    STRICT,
-    WARN,
     EventLogErrorFlags,
 )
 
@@ -82,7 +64,7 @@ class ContractFunction:
         """
         web3_func = self.web3_func.__call__(*args, **{})
 
-        block_number = self.web3_func.web3.eth.block_number
+        block_number = self.web3_func.w3.eth.block_number
 
         tx = kwargs
         tx_hash: str = ""
@@ -91,16 +73,16 @@ class ContractFunction:
 
         if web3_func.abi['stateMutability'] not in {'pure', 'view'}:
             receipt_out_queue = queue.Queue(maxsize=1)
-            tx = web3_func.buildTransaction(tx)
+            tx = web3_func.build_transaction(tx)
             try:
-                web3_func.web3.eth.call(tx)
+                web3_func.w3.eth.call(tx)
             except Exception as e:
                 return ExecutionResult('', None, [], str(e))
             self.nonce_manager.submit_tx(tx, receipt_out_queue)
             (tx_hash, receipt) = receipt_out_queue.get()
             for event in self.events:
                 try:
-                    events.extend(event().processReceipt(receipt, EventLogErrorFlags.Discard))
+                    events.extend(event().process_receipt(receipt, EventLogErrorFlags.Discard))
                 except:
                     pass
 
@@ -130,13 +112,13 @@ class Contract:
 
     def __init__(self, contract: Web3Contract):
         self.web3Contract = contract
-        self.manager = nonce.Manager(contract.web3)
+        self.manager = nonce.Manager(contract.w3)
 
         # load functions
         func_dict = {}
-        for func_name in contract.functions:
-            f = contract.functions.__getattribute__(func_name)
-            func_dict[func_name] = ContractFunction(
+        for func in contract.functions:
+            f = contract.functions.__getattribute__(str(func.name))
+            func_dict[str(func.name)] = ContractFunction(
                 self.manager,
                 self.web3Contract.events,
                 f)
