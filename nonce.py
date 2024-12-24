@@ -6,7 +6,7 @@ from web3.types import TxParams
 
 from thread import ThreadManager, QUEUE_EXIT_SIGNAL
 
-CONFIRM_TIMEOUT = 1000 * 2
+CONFIRM_TIMEOUT = 1000 * 30
 
 
 class Manager:
